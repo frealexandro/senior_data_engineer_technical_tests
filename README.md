@@ -1,72 +1,54 @@
-# Guía para Data Engineers Senior - Superando Entrevistas Técnicas
+# Data Engineering Interview Preparation
 
-## 🚀 Motivación para este repositorio 
+## Overview
+This guide is designed to help you prepare for a Data Engineering interview by focusing on key technical skills that are commonly evaluated. Proper preparation and practice will increase your chances of securing a better job opportunity.
 
-## Nota Importante 📢: Este sera el unico documento en español - debido al nivel de exigencia
+## Key Skills to Focus On
 
-Realmente hago este repositorio porque el auge de los Data Engineers en 2025 es exponencial. Mi última entrevista perdida fue la razón por la cual inicié este proyecto, con la esperanza de ayudar a otros Data Engineers a alcanzar un nivel senior. He perdido tal vez más de 5 entrevistas para puestos senior con ofertas de hasta **$4500 USD**. 
+1. **Fundamental Concepts of Data Engineering**  
+   - Data pipelines & ETL processes  
+   - Batch vs. streaming data processing  
+   - Data warehousing concepts (e.g., OLAP vs. OLTP)  
+   - Big Data technologies (e.g., Hadoop, Spark, Kafka)  
+   
+2. **Advanced SQL Practice**  
+   - Complex queries and optimizations  
+   - Window functions and CTEs  
+   - Indexing and performance tuning  
+   - Data modeling and normalization  
 
-Cabe aclarar que soy de **Latinoamérica, Colombia**, y aunque esto representa aproximadamente **18 millones de pesos colombianos**, suficiente para vivir bien, quiero mejorar mis habilidades y conseguir mejores oportunidades. 
+3. **Python for Data Engineering**  
+   - exercises to practice programming logic
+   - Data manipulation with Pandas  
+   - Working with APIs and databases  
+   - Writing efficient ETL scripts  
+   - Automation and workflow scheduling (e.g., Airflow)  
+   
+   
+4. **Modern Data Architectures**  
+   - Cloud platforms (AWS, GCP, Azure)  
+   - Data lakes vs. data warehouses  
+   - Serverless data processing  
+   - Containerization (Docker, Kubernetes)  
 
-De estas entrevistas técnicas he podido recolectar algunas pistas sobre cómo prepararse y cuáles han sido mis fallas. Entre los aspectos clave para conseguir una posición senior, identifico:
+5. **Algorithms and Data Structures**  
+   - Common sorting and searching algorithms  
+   - Linked lists, trees, and graphs  
+   - Hash tables and caching mechanisms  
+   - Problem-solving with coding challenges  
+   
+## Recommended Study Plan
 
-### 🔎 Habilidades clave a desarrollar
-- **Inglés** 
-- **Python**
-- **Spark & Databricks**
-- **Servicios en la nube (AWS, GCP, Azure)** 
-  - Tener una certificación en alguna nube es esencial
-- **Ejercicios de lógica y resolución de problemas**
-- **Evitar la dependencia excesiva de IA (Copilot, ChatGPT, etc.)**
+1. **Week 1:** Review data engineering fundamentals and SQL.  
+2. **Week 2:** Practice Python for ETL and workflow automation.  
+3. **Week 3:** Learn modern data architectures and cloud solutions.  
+4. **Week 4:** Solve algorithm and data structure problems.  
 
-Uno de mis principales errores ha sido la falta de práctica en ejercicios de lógica. Además, herramientas como Copilot y el prompt engineering me han hecho más "flojo", por lo que debo retomar el hábito de programar sin depender completamente de estas tecnologías. 
-
----
-
-## 🎓 Contenido de la guía
-
-1. **Preparación técnica**
-   - Conceptos fundamentales de **Data Engineering**
-   - Práctica con **SQL avanzado**
-   - **Python para Data Engineering**
-   - Arquitecturas de datos modernas
-   - Ejercicios de **algoritmos y estructuras de datos**
-
-2. **Habilidades en la nube**
-   - Recursos y laboratorios prácticos en **AWS, GCP y Azure**
-   - **Certificaciones recomendadas**
-   - Práctica con servicios clave (Redshift, BigQuery, Databricks, etc.)
-
-3. **Spark y Databricks**
-   - Introducción y ejercicios prácticos con **PySpark**
-   - Optimización de consultas y **performance tuning**
-   - Casos de uso reales
-
-4. **Práctica de entrevistas técnicas**
-   - Ejercicios de **lógica y algoritmos**
-   - Preguntas comunes en entrevistas para Data Engineers Senior
-   - Estrategias para responder preguntas en inglés
-
-5. **Desafío de proyectos**
-   - Proyectos prácticos con datasets reales
-   - Creación de pipelines ETL
-   - Modelado de datos y optimización
+## Final Tips
+- Stay consistent with daily practice.
+- Work on real-world projects to solidify knowledge.
+- Mock interview with peers or mentors.
+- Keep learning and improving to achieve your career goals!
 
 ---
-
-## 📈 Objetivo del repositorio
-
-Este repositorio será un recurso práctico para Data Engineers que buscan mejorar sus habilidades y prepararse para entrevistas de nivel senior. La meta es consolidar conocimientos y **superar entrevistas técnicas con confianza**.
-
-Si estás en un camino similar, ¡bienvenido! 🎉 
-
-## 🌟 Contribuciones
-
-Si tienes recursos, ejercicios o experiencias que puedan enriquecer esta guía, siéntete libre de contribuir.
-
----
-
-## 🛠️ Instalación y uso (Próximamente)
-
-👉 **Pronto agregaré ejemplos y notebooks para practicar.**
-
+**Good luck with your Data Engineering interview preparation!** 🚀
