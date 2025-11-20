@@ -407,7 +407,7 @@ Dataflow is for serverless data processing, Dataproc is for running Spark/Hadoop
 - Runs queries on huge datasets very fast.
 
 
-# Question_and_answers_fundamentals_aws
+# QUESTION_AND_ANSWERS_FUNDAMENTALS_AWS
 
 ## 0 What is BigQuery? → **Amazon Redshift**
 
