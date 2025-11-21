@@ -1,5 +1,7 @@
 # Data Engineering Interview Preparation
 
+![Mapa mental de preparación](assets/36395024-82ee-4cd8-81ce-571792eec50f.jpeg)
+
 ## Overview
 This guide is designed to help you prepare for a Data Engineering interview by focusing on key technical skills that are commonly evaluated. Proper preparation and practice will increase your chances of securing a better job opportunity.
 
