@@ -581,3 +581,24 @@ On-premise, I’ve worked with Hadoop/YARN-based Spark clusters, handling resour
 - In the cloud, I’ve used managed services like Dataproc (GCP) and EMR (AWS), which simplify cluster setup and scaling.
 
 - Overall, I’m comfortable with both environments and understand the differences in deployment, optimization, and cost management.
+
+## 7.1 Have you worked with enterprise databases like Oracle or SQL Server?
+
+- I have managed both Oracle and SQL Server instances supporting transactional workloads and downstream analytics, handling schema design, performance tuning, and backup/restore strategies.
+- With Oracle, I’ve implemented PL/SQL-based ETL routines, configured partitioning, and integrated GoldenGate/CDC feeds to land data in cloud storage.
+- With SQL Server, I’ve optimized SSIS packages, set up Always On availability groups, and exposed data via views or stored procedures consumed by Spark and BI tools.
+- I’ve also built ingestion patterns that replicate data from these databases into modern data lakes/warehouses using connectors such as Datastream, AWS DMS, or Debezium.
+
+## 7.2 How have you used serverless functions (e.g., Cloud Functions, AWS Lambda) in data engineering workflows?
+
+- I leverage serverless functions for lightweight, event-driven tasks like schema validation, metadata enrichment, and triggering downstream jobs whenever new files arrive in storage.
+- They serve as glue code that connects services: reading from Pub/Sub/SQS topics, calling REST APIs, or invoking Dataproc/Spark jobs as part of a larger pipeline.
+- I implement observability (structured logging, metrics, dead-letter queues) and guardrails such as idempotency keys and retries to keep these functions production-ready.
+- Serverless functions help keep costs low and simplify operations because there are no servers to manage, yet they scale instantly with the volume of events.
+
+## 7.3 What orchestration tools have you used to coordinate data workflows?
+
+- I design and maintain DAGs in Apache Airflow/Cloud Composer, orchestrating batch and streaming jobs across BigQuery, Dataproc, and on-prem systems.
+- I’ve also worked with AWS Step Functions and Azure Data Factory for event-driven pipelines, leveraging native integrations with Lambda, Glue, and Synapse.
+- My workflows include automated dependency management, SLA monitoring, and alerting integrations (Slack, PagerDuty) to ensure timely responses.
+- I apply best practices such as parametrized DAGs, dynamic task mapping, and modular operators so pipelines remain maintainable and reusable across projects.
