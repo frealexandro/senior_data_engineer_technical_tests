@@ -926,15 +926,15 @@ DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 
 ### 💬 My Experience (How I'd explain it in an interview)
 
-> *"This was a similar CDP project but built entirely on AWS for a different client. The business challenge was the same — fragmented customer data — but this client had strict security and privacy requirements. They needed to prove to auditors that customer data was protected, and since they had European users, they had to follow data privacy laws. So governance was a priority from day one.*
+> *"In this project, I was responsible for building a Customer Data Platform from scratch on AWS. The marketing team had customer data scattered across 8 different systems — CRM, website analytics, mobile app events, ad platforms like Google Ads and Meta, and even call center logs. Nobody had a unified view of the customer.*
 >
-> *For ingestion, I used Lambda functions triggered by EventBridge on a schedule to pull data from ad platforms and CRM systems. Real-time events from the website flowed through Kinesis Data Streams, and I configured Kinesis Firehose to automatically deliver and transform the data into S3 in Parquet format.*
+> *I started by extracting data from Supermetrics and the different ad platform APIs using Lambda functions triggered by EventBridge on a schedule. For real-time events from the website and mobile app, I set up Kinesis Data Streams to capture everything as it happened, and configured Kinesis Firehose to automatically deliver the data to S3 in Parquet format. Then I used AWS Glue with Spark to process the data and perform identity resolution — basically matching users across systems using email, phone numbers, and device IDs.*
 >
-> *The heavy ETL processing ran on AWS Glue with Spark jobs. I designed the data lake with a Bronze/Silver/Gold architecture in S3 — raw data in Bronze, cleaned data in Silver, and business-ready aggregations in Gold. For the identity resolution at scale, I spun up EMR clusters with custom Spark jobs to match entities across millions of records.*
+> *All the processed data landed in S3 organized as a data lake with Bronze, Silver, and Gold layers — raw data in Bronze, cleaned data in Silver, and business-ready aggregations in Gold. For the warehouse layer, I used Redshift Serverless which I partitioned by date and used distribution keys on customer_id for optimal query performance. I also set up Redshift Spectrum to query the S3 data lake directly without moving data around.*
 >
-> *The warehouse layer used Redshift Serverless, which was great for cost optimization since we only paid for actual queries. I also set up Redshift Spectrum to query the S3 data lake directly without moving data around. Lake Formation handled all the access control and made privacy compliance much easier — I could control who sees what data at the column level, like hiding email addresses from certain teams, and track where data came from and where it went.*
+> *The transformation layer was built with custom SQL scripts and Glue jobs, creating a clean data model with staging, intermediate, and mart layers. The whole pipeline was orchestrated with MWAA (Managed Airflow) running daily refreshes.*
 >
-> *The orchestration ran on MWAA (Managed Airflow), and for activation, we used SageMaker to train and deploy ML models that fed predictions back to the ad platforms. We processed over 50 million events daily with sub-second latency."*
+> *For activation, I connected the unified profiles to SageMaker to build propensity models — predicting which customers were likely to convert. These predictions fed back into Google Ads and Meta for audience targeting. Lake Formation handled all the access control — I could control who sees what data at the column level, like hiding email addresses from certain teams. The end result was over 50 million events processed daily and the same business impact: unified customer profiles and reduced acquisition costs."*
 
 ### 🏗️ Architecture
 
