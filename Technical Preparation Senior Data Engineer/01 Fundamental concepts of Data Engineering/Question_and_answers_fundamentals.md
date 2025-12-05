@@ -811,7 +811,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 | 🔐 **Security** | Column-level masking, encryption |
 | 👤 **Access Control** | IAM with least privilege |
 | 📝 **Documentation** | Data ownership, retention policies |
-| 🛡️ **Compliance** | Automated PII detection (GDPR/CCPA) |
+| 🛡️ **Compliance** | Automated detection of sensitive personal data (emails, phones, IDs) |
 
 ---
 
@@ -849,7 +849,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 | # | Project | Cloud | Category | Key Result |
 |---|---------|-------|----------|------------|
 | 1️⃣ | **CDP (Customer Data Platform)** | 🔵 GCP | Data Platform | 5M+ unified profiles, 25% CAC reduction |
-| 1️⃣B | **CDP (Customer Data Platform)** | 🟠 AWS | Data Platform | 50M+ events/day, SOC2/GDPR compliant |
+| 1️⃣B | **CDP (Customer Data Platform)** | 🟠 AWS | Data Platform | 50M+ events/day, security & privacy compliant |
 | 2️⃣ | **Real-Time Alert System** | ☁️ Multi-cloud | Monitoring | < 5 min alert latency, 40% cost savings |
 | 3️⃣ | **Multi-Modal Insight System** | ☁️ Multi-cloud | AI/Analytics | 70% less manual review, 18% ROAS improvement |
 | 4️⃣ | **Governance Framework** | ☁️ Multi-cloud | Governance | 65% fewer incidents, 30% cost savings |
@@ -926,13 +926,13 @@ DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 
 ### 💬 My Experience (How I'd explain it in an interview)
 
-> *"This was a similar CDP project but built entirely on AWS for a different client. The business challenge was the same — fragmented customer data — but this client had strict compliance requirements for SOC2 and GDPR, so governance was a priority from day one.*
+> *"This was a similar CDP project but built entirely on AWS for a different client. The business challenge was the same — fragmented customer data — but this client had strict security and privacy requirements. They needed to prove to auditors that customer data was protected, and since they had European users, they had to follow data privacy laws. So governance was a priority from day one.*
 >
 > *For ingestion, I used Lambda functions triggered by EventBridge on a schedule to pull data from ad platforms and CRM systems. Real-time events from the website flowed through Kinesis Data Streams, and I configured Kinesis Firehose to automatically deliver and transform the data into S3 in Parquet format.*
 >
 > *The heavy ETL processing ran on AWS Glue with Spark jobs. I designed the data lake with a Bronze/Silver/Gold architecture in S3 — raw data in Bronze, cleaned data in Silver, and business-ready aggregations in Gold. For the identity resolution at scale, I spun up EMR clusters with custom Spark jobs to match entities across millions of records.*
 >
-> *The warehouse layer used Redshift Serverless, which was great for cost optimization since we only paid for actual queries. I also set up Redshift Spectrum to query the S3 data lake directly without moving data around. Lake Formation handled all the access control and made GDPR compliance much easier — I could grant column-level permissions and track data lineage.*
+> *The warehouse layer used Redshift Serverless, which was great for cost optimization since we only paid for actual queries. I also set up Redshift Spectrum to query the S3 data lake directly without moving data around. Lake Formation handled all the access control and made privacy compliance much easier — I could control who sees what data at the column level, like hiding email addresses from certain teams, and track where data came from and where it went.*
 >
 > *The orchestration ran on MWAA (Managed Airflow), and for activation, we used SageMaker to train and deploy ML models that fed predictions back to the ad platforms. We processed over 50 million events daily with sub-second latency."*
 
@@ -965,7 +965,7 @@ DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 | ⚡ **Events/Day** | 50M+ with sub-second latency |
 | 💰 **Cost Model** | Redshift Serverless (pay-per-query) |
 | 🔗 **Data Sharing** | AWS Data Exchange |
-| 🔒 **Compliance** | SOC2 + GDPR via Lake Formation |
+| 🔒 **Compliance** | Security audits + privacy laws via Lake Formation |
 
 ---
 
@@ -1100,9 +1100,9 @@ INPUT → PROCESSING → ANALYSIS → OUTPUT
 >
 > *The validation layer was integrated into our CI/CD pipeline with Cloud Build and GitHub Actions. Before any code merged, it ran schema validation to compare source schemas against expected, data quality tests similar to what you'd do with dbt or Great Expectations, and drift detection to catch breaking changes early. I even added cost estimation so we could flag expensive queries before they hit production.*
 >
-> *The safety layer was specifically for our LLM implementations. I built input sanitization to catch prompt injection attempts, integrated Cloud DLP and AWS Comprehend for PII detection on both inputs and outputs, added hallucination checks that verified responses against our source data, and implemented content safety classifiers to filter inappropriate outputs. Rate limiting prevented runaway token usage.*
+> *The safety layer was specifically for our LLM implementations. I built input sanitization to catch prompt injection attempts, integrated tools to automatically detect sensitive personal data like emails, phone numbers, or credit cards in both inputs and outputs. I added hallucination checks that verified responses against our source data, and implemented content safety classifiers to filter inappropriate outputs. Rate limiting prevented runaway token usage.*
 >
-> *Finally, the observability layer had dashboards tracking pipeline health, cost breakdowns by project and team, data quality metrics, and AI safety stats like blocked requests and PII detections.*
+> *Finally, the observability layer had dashboards tracking pipeline health, cost breakdowns by project and team, data quality metrics, and AI safety stats like blocked requests and detection of sensitive personal data.*
 >
 > *The impact was significant — 65% fewer production incidents, 30% cost savings from catching expensive patterns early, and onboarding time cut in half because new engineers could actually find documentation."*
 
@@ -1117,7 +1117,7 @@ INPUT → PROCESSING → ANALYSIS → OUTPUT
 │    Schema Validation • Data Quality Tests • Drift Detection         │
 ├─────────────────────────────────────────────────────────────────────┤
 │ 🛡️ SAFETY LAYER (AI/LLM)                                            │
-│    Prompt Injection • Output Filtering • PII Masking                │
+│    Prompt Injection • Output Filtering • Personal Data Masking      │
 ├─────────────────────────────────────────────────────────────────────┤
 │ 📊 OBSERVABILITY LAYER                                               │
 │    Pipeline Metrics • Cost Dashboards • Alert Rules                 │
@@ -1129,7 +1129,7 @@ INPUT → PROCESSING → ANALYSIS → OUTPUT
 | Control | Implementation | Trigger |
 |---------|----------------|---------|
 | 🛡️ **Prompt Injection** | Input sanitization + patterns | Pre-processing |
-| 👤 **PII Detection** | Cloud DLP / Comprehend | Input & Output |
+| 👤 **Personal Data Detection** | Cloud DLP / Comprehend | Input & Output |
 | 🔍 **Hallucination Check** | Fact-verification | Post-processing |
 | 🚫 **Output Filtering** | Content safety classifiers | Pre-response |
 | ⏱️ **Rate Limiting** | Token/request quotas | Runtime |
