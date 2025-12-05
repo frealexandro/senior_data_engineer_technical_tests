@@ -873,7 +873,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 > *"In this project, I was responsible for building a Customer Data Platform from scratch. The marketing team had customer data scattered across 8 different systems — CRM, website analytics, mobile app events, ad platforms like Google Ads and Meta, and even call center logs. Nobody had a unified view of the customer.*
 >
-> *I started by extracting data from Supermetrics and the different ad platform APIs using Cloud Functions. For real-time events from the website and mobile app, I set up Pub/Sub to capture everything as it happened. Then I used Dataflow with Apache Beam to process the streaming data and perform identity resolution — basically matching users across systems using email, phone numbers, and device IDs.*
+> *I started by extracting data from Supermetrics and the different ad platform APIs using Cloud Functions. For real-time events from the website and mobile app, I set up Pub/Sub to capture everything as it happened. Then I used Dataproc with Spark Structured Streaming to process the streaming data and perform identity resolution — basically matching users across systems using email, phone numbers, and device IDs.*
 >
 > *All the processed data landed in BigQuery, which I partitioned by date and clustered by customer_id for optimal query performance. I built the transformation layer with Dataform, creating a clean data model with staging, intermediate, and mart layers. The whole pipeline was orchestrated with Cloud Composer running daily refreshes.*
 >
@@ -884,9 +884,9 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 ```
 DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 ─────────────────────────────────────────────────────────────
-[CRM]          Cloud Functions   Dataflow      BigQuery     Vertex AI
-[Website]  ──► Pub/Sub       ──► Dataform  ──► GCS      ──► Looker
-[Mobile]       Scheduler                                    Ad APIs
+[CRM]          Cloud Functions   Dataproc      BigQuery     Vertex AI
+[Website]  ──► Pub/Sub       ──► (Spark)   ──► GCS      ──► Looker
+[Mobile]       Scheduler         Dataform                   Ad APIs
 [Ads]
 [Call Center]
                └──── Cloud Composer (Airflow) Orchestration ────┘
@@ -897,7 +897,7 @@ DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 | Layer | Components | Details |
 |-------|------------|---------|
 | 📥 **Ingestion** | Cloud Functions, Pub/Sub | Real-time + batch loads |
-| ⚙️ **Processing** | Dataflow, Dataform | Identity resolution, transforms |
+| ⚙️ **Processing** | Dataproc (Spark), Dataform | Identity resolution, transforms |
 | 💾 **Storage** | BigQuery, GCS | Partitioned by date, clustered by customer_id |
 | 🔗 **Identity** | Custom matching | Email, phone, device IDs |
 | 🎯 **Activation** | Vertex AI, APIs | Propensity models, audience sync |
@@ -983,9 +983,9 @@ DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 
 > *"The marketing team was constantly getting burned by campaign issues they discovered too late — budgets would overspend, CTR would tank, or negative sentiment would spike on social media, and they'd only find out hours later when checking dashboards manually.*
 >
-> *I built a real-time alerting system that worked across both GCP and AWS, depending on where the client's infrastructure lived. On GCP, I set up Cloud Functions that pulled data from ad platforms every 5 minutes and pushed events to Pub/Sub. A Dataflow streaming job aggregated the metrics in real-time and wrote to BigQuery. Then I created scheduled queries in BigQuery that checked thresholds and triggered another Cloud Function to send alerts to Slack or email.*
+> *I built a real-time alerting system that worked across both GCP and AWS, depending on where the client's infrastructure lived. On GCP, I set up Cloud Functions that pulled data from ad platforms every 5 minutes and pushed events to Pub/Sub. A Dataproc cluster running Spark Structured Streaming aggregated the metrics in real-time and wrote to BigQuery. Then I created scheduled queries in BigQuery that checked thresholds and triggered another Cloud Function to send alerts to Slack or email.*
 >
-> *On the AWS side, the architecture was similar but used Lambda, Kinesis Data Streams, and Kinesis Analytics for the streaming aggregation. Alerts went through SNS to route to different channels based on severity — Slack for medium alerts, PagerDuty for critical ones.*
+> *On the AWS side, the architecture was similar but used Lambda, Kinesis Data Streams, and EMR with Spark Structured Streaming for the streaming aggregation. Alerts went through SNS to route to different channels based on severity — Slack for medium alerts, PagerDuty for critical ones.*
 >
 > *I implemented different alert categories: budget overspend when daily spend hit 90% of cap, performance drops when CTR or CVR fell more than 20% compared to the 7-day average, and sentiment spikes when negative mentions exceeded 2 standard deviations from normal. For data freshness, if we didn't receive data for more than 2 hours, that triggered a critical alert.*
 >
@@ -998,7 +998,7 @@ DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
          ────────────                    ────────────
 Cloud Functions → Pub/Sub         Lambda → Kinesis
          │                                 │
-Dataflow (streaming)              Kinesis Analytics
+Dataproc (Spark Streaming)        EMR (Spark Streaming)
          │                                 │
 BigQuery + Scheduled Queries      Redshift + Lambda
          │                                 │
@@ -1430,7 +1430,7 @@ INPUT → PROCESSING → ANALYSIS → OUTPUT
 
 ### 📝 Example Answer
 
-> *"In my CDP project, the **situation** was that marketing had fragmented customer data across 8 systems. My **task** was to design a unified data platform. I **architected** a solution using BigQuery for storage, Dataflow for streaming identity resolution, and Vertex AI for propensity models. The **result** was 5M+ unified profiles and a 25% reduction in customer acquisition cost."*
+> *"In my CDP project, the **situation** was that marketing had fragmented customer data across 8 systems. My **task** was to design a unified data platform. I **architected** a solution using BigQuery for storage, Dataproc with Spark for streaming identity resolution, and Vertex AI for propensity models. The **result** was 5M+ unified profiles and a 25% reduction in customer acquisition cost."*
 
 ---
 
