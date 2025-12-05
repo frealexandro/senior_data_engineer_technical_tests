@@ -909,6 +909,371 @@ LangGraph is ideal for deterministic multi-agent workflows.
 
 ---
 
+## ✅ SECTION 5.1 — Key Projects Portfolio (Use in Interviews)
+
+> **Note:** These are real projects you can reference when asked "Tell me about a project you're proud of" or "Describe a complex system you built."
+
+---
+
+### 🎯 Project 1: Customer Data Platform (CDP) — GCP Implementation
+
+**Problem:**
+Marketing teams needed a unified view of customer behavior across multiple touchpoints to enable personalized campaigns and reduce customer acquisition costs.
+
+**Solution Architecture (GCP):**
+
+```
+Data Sources                    Ingestion              Processing              Storage              Activation
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[CRM/Salesforce]  ────┐
+[Website Events]  ────┤         Cloud Functions       Dataflow               BigQuery             Vertex AI
+[Mobile App]      ────┼────►    Pub/Sub          ───► (Apache Beam)    ───►  (Data Warehouse) ───► Predictions
+[Ad Platforms]    ────┤         Cloud Scheduler        Dataform               Cloud Storage        Looker
+[Call Center]     ────┘                                (Transformations)      (Raw/Processed)      Marketing APIs
+```
+
+**Technical Implementation:**
+
+- **Ingestion Layer:** Cloud Functions triggered by Pub/Sub for real-time events; scheduled batch loads via Cloud Scheduler
+- **Processing:** Dataflow for streaming identity resolution; Dataform for SQL transformations and data modeling
+- **Storage:** BigQuery as central warehouse with partitioning by date, clustering by customer_id
+- **Identity Resolution:** Probabilistic and deterministic matching using email, phone, device IDs
+- **Activation:** Vertex AI for propensity models; automated audience sync to Google Ads, Meta, TikTok
+- **Orchestration:** Cloud Composer (Airflow) managing daily refreshes and ML retraining
+
+**Key Results:**
+
+- Unified 5M+ customer profiles from 8 data sources
+- Reduced CAC by 25% through better audience targeting
+- Real-time event processing at 10K events/second
+- 360° customer view available within 15 minutes of interaction
+
+---
+
+### 🎯 Project 1B: Customer Data Platform (CDP) — AWS Implementation
+
+**Problem:**
+Same business need—unified customer view for personalization—but implemented on AWS infrastructure for a different client.
+
+**Solution Architecture (AWS):**
+
+```
+Data Sources                    Ingestion              Processing              Storage              Activation
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[CRM/Salesforce]  ────┐
+[Website Events]  ────┤         Lambda                 Glue/EMR               Redshift             SageMaker
+[Mobile App]      ────┼────►    Kinesis Data     ───► (Spark ETL)       ───►  (Data Warehouse) ───► Predictions
+[Ad Platforms]    ────┤         Streams                Step Functions         S3 Data Lake         QuickSight
+[Call Center]     ────┘         EventBridge            (Orchestration)        (Raw/Curated)        Marketing APIs
+```
+
+**Technical Implementation:**
+
+- **Ingestion Layer:** Lambda functions triggered by Kinesis Data Streams for real-time; EventBridge for scheduled batch
+- **Processing:** AWS Glue (Spark) for heavy ETL; Step Functions for workflow orchestration
+- **Storage:** S3 as data lake (Bronze/Silver/Gold layers); Redshift Serverless as warehouse
+- **Identity Resolution:** Custom Spark jobs on EMR for entity matching at scale
+- **Activation:** SageMaker for ML models; Lambda for API integrations with ad platforms
+- **Orchestration:** MWAA (Managed Airflow) or Step Functions for pipeline coordination
+
+**AWS-Specific Patterns:**
+
+- **Kinesis Data Firehose** for automatic S3 delivery with transformation
+- **Lake Formation** for centralized data governance and access control
+- **Athena** for ad-hoc queries on S3 data lake
+- **Redshift Spectrum** for querying S3 directly from Redshift
+
+**Key Results:**
+
+- Processed 50M+ events daily with sub-second latency
+- Cost-optimized using Redshift Serverless (pay-per-query)
+- Cross-account data sharing via AWS Data Exchange
+- Compliance with SOC2 and GDPR through Lake Formation policies
+
+---
+
+### 🎯 Project 2: Real-Time Alert & Monitoring System for Marketing Operations
+
+**Problem:**
+Marketing teams needed immediate alerts when campaigns underperformed, budgets exceeded thresholds, or sentiment shifted negatively on social media.
+
+**Solution Architecture (Multi-Cloud):**
+
+```
+                    GCP Stack                                    AWS Stack
+                    ─────────────────────────────────────────────────────────────
+Data Sources:       Pub/Sub ◄── Cloud Functions                  Kinesis ◄── Lambda
+                         │                                            │
+Processing:         Dataflow (streaming)                         Kinesis Analytics
+                         │                                            │
+Rules Engine:       BigQuery + Scheduled Queries                 Redshift + Lambda
+                         │                                            │
+Alert Dispatch:     Cloud Functions → Slack/Email/PagerDuty      Lambda → SNS → Slack/Email
+                         │                                            │
+Dashboard:          Looker Studio                                QuickSight
+```
+
+**Technical Implementation:**
+
+**GCP Version:**
+- **Ingestion:** Cloud Functions pulling from ad platform APIs every 5 minutes; Pub/Sub for event streaming
+- **Processing:** Dataflow streaming jobs for real-time metric aggregation
+- **Rules Engine:** BigQuery scheduled queries checking thresholds; results trigger Cloud Functions
+- **Alert Logic:**
+  - Budget alerts: Spend > 90% of daily cap
+  - Performance alerts: CTR drops > 20% vs. 7-day average
+  - Sentiment alerts: Negative sentiment spike > 2 standard deviations
+  - Anomaly detection: Statistical deviation from expected patterns
+
+**AWS Version:**
+- **Ingestion:** Lambda functions on EventBridge schedule; Kinesis for streaming
+- **Processing:** Kinesis Data Analytics (SQL) for real-time aggregations
+- **Rules Engine:** Lambda functions evaluating thresholds; CloudWatch Alarms for infrastructure
+- **Alert Dispatch:** SNS topics routing to Slack, email, PagerDuty based on severity
+
+**Alert Categories Implemented:**
+
+| Category | Trigger | Severity | Channel |
+|----------|---------|----------|---------|
+| Budget Overspend | Spend > 90% daily cap | High | Slack + Email |
+| Performance Drop | CTR/CVR down > 20% | Medium | Slack |
+| Sentiment Spike | Negative mentions > 2σ | High | PagerDuty |
+| Data Freshness | No data > 2 hours | Critical | PagerDuty |
+| Anomaly Detection | ML model flags deviation | Medium | Slack |
+
+**Key Results:**
+
+- Alert latency reduced from hours to < 5 minutes
+- 40% reduction in wasted ad spend through early intervention
+- Unified alerting across 6 marketing platforms
+- Self-service alert configuration for marketing teams
+
+---
+
+### 🎯 Project 3: Multi-Modal Insight Systems Combining Text, Metrics & Creative Assets
+
+**Problem:**
+Campaign analysis was siloed—performance metrics in one tool, creative assets in another, copy analysis done manually. Teams needed holistic insights combining all dimensions.
+
+**Solution Architecture:**
+
+```
+Input Sources                Processing                    Analysis                    Output
+───────────────────────────────────────────────────────────────────────────────────────────────────
+[Ad Creatives]  ────┐
+  • Images        │        Cloud Functions/Lambda         Vertex AI / Bedrock          Insights Dashboard
+  • Videos        │              │                              │                            │
+  • Copy Text   ──┼────►   Vision AI / Rekognition  ───►  LLM Analysis      ───►      Recommendations
+                  │              │                              │                            │
+[Performance      │        Dataform / Glue               Multi-Modal                   Automated Reports
+ Metrics]       ──┤              │                        Embeddings                         │
+  • CTR           │        BigQuery / Redshift                 │                        Slack/Email
+  • CVR           │              │                              │                            │
+  • ROAS        ──┘        Feature Engineering           Scoring Models               API Endpoints
+```
+
+**Technical Implementation:**
+
+**Creative Asset Processing:**
+- **Image Analysis:** Vision AI (GCP) / Rekognition (AWS) for object detection, text extraction, brand safety
+- **Video Analysis:** Video Intelligence API for scene detection, logo presence, sentiment
+- **Copy Analysis:** LLM-based evaluation of ad copy effectiveness, tone, CTA strength
+
+**Multi-Modal Pipeline:**
+
+```python
+# Simplified pipeline structure
+class MultiModalInsightPipeline:
+    def process_creative(self, creative_id):
+        # 1. Extract visual features
+        visual_features = self.vision_api.analyze(creative_id)
+        
+        # 2. Extract text/copy features
+        text_features = self.llm.analyze_copy(creative_id)
+        
+        # 3. Get performance metrics
+        metrics = self.get_metrics_from_warehouse(creative_id)
+        
+        # 4. Generate multi-modal embedding
+        embedding = self.combine_features(visual_features, text_features, metrics)
+        
+        # 5. Score and recommend
+        score = self.scoring_model.predict(embedding)
+        recommendations = self.llm.generate_recommendations(embedding, score)
+        
+        return {
+            'creative_score': score,
+            'visual_insights': visual_features,
+            'copy_insights': text_features,
+            'recommendations': recommendations
+        }
+```
+
+**LLM-Based Creative Evaluation:**
+
+- **Copy Effectiveness:** Clarity, emotional appeal, urgency, brand voice alignment
+- **Visual Quality:** Composition, brand consistency, attention-grabbing elements
+- **Targeting Fit:** Creative-audience alignment based on historical performance
+- **A/B Recommendations:** Suggested variations based on winning patterns
+
+**Key Results:**
+
+- Automated analysis of 10K+ creatives monthly
+- Reduced manual creative review time by 70%
+- Improved campaign ROAS by 18% through data-driven creative decisions
+- Standardized creative scoring across all marketing channels
+
+---
+
+### 🎯 Project 4: End-to-End Governance Framework for AI & Data Pipelines
+
+**Problem:**
+As AI adoption scaled, teams faced inconsistent data quality, undocumented pipelines, LLM safety concerns, and unpredictable costs. A unified governance framework was needed.
+
+**Solution Architecture:**
+
+```
+Governance Layers
+───────────────────────────────────────────────────────────────────────────────────────────────────
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│  DOCUMENTATION LAYER                                                                            │
+│  • Data Catalog (Dataplex/Glue Catalog)  • Pipeline Docs  • Runbooks  • Architecture Diagrams  │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+                                              │
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│  VALIDATION LAYER (CI/CD Integrated)                                                            │
+│  • Schema Validation  • Data Quality Tests  • Drift Detection  • Cost Estimation               │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+                                              │
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│  SAFETY LAYER (AI/LLM Specific)                                                                 │
+│  • Prompt Injection Detection  • Output Filtering  • PII Masking  • Hallucination Monitoring   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+                                              │
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│  OBSERVABILITY LAYER                                                                            │
+│  • Pipeline Metrics  • Cost Dashboards  • Alert Rules  • Incident Tracking                     │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Technical Implementation:**
+
+**1. Data Quality Framework:**
+
+```yaml
+# Example: Dataform/dbt test configuration
+tests:
+  - name: orders_not_null
+    description: "Critical fields must not be null"
+    query: |
+      SELECT COUNT(*) as failures
+      FROM {{ ref('orders') }}
+      WHERE order_id IS NULL OR customer_id IS NULL
+    severity: error
+    
+  - name: revenue_threshold
+    description: "Daily revenue within expected range"
+    query: |
+      SELECT COUNT(*) as failures
+      FROM {{ ref('daily_revenue') }}
+      WHERE revenue < 0 OR revenue > 10000000
+    severity: warning
+```
+
+**2. Schema Drift Detection:**
+
+- Automated comparison of source schemas vs. expected
+- Alerts on new columns, type changes, or missing fields
+- Self-healing transformations for backward compatibility
+
+**3. LLM Safety Controls:**
+
+| Control | Implementation | Trigger |
+|---------|----------------|---------|
+| Prompt Injection | Input sanitization + pattern detection | Pre-processing |
+| PII Detection | Cloud DLP / Comprehend | Input & Output |
+| Hallucination Check | Fact-verification against source data | Post-processing |
+| Output Filtering | Content safety classifiers | Pre-response |
+| Rate Limiting | Token/request quotas per user/team | Runtime |
+
+**4. Cost Monitoring & Alerts:**
+
+```sql
+-- BigQuery cost monitoring query
+SELECT
+  project_id,
+  user_email,
+  SUM(total_bytes_billed) / POW(1024, 4) AS tb_billed,
+  SUM(total_bytes_billed) / POW(1024, 4) * 5 AS estimated_cost_usd
+FROM `region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+WHERE creation_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
+GROUP BY 1, 2
+HAVING estimated_cost_usd > 100
+ORDER BY estimated_cost_usd DESC
+```
+
+**5. CI/CD Integration:**
+
+```yaml
+# GitHub Actions workflow for data pipeline validation
+name: Data Pipeline Validation
+
+on:
+  pull_request:
+    paths:
+      - 'dataform/**'
+      - 'dbt/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Schema Validation
+        run: python scripts/validate_schemas.py
+        
+      - name: Data Quality Tests
+        run: dataform test --dry-run
+        
+      - name: Cost Estimation
+        run: python scripts/estimate_query_cost.py
+        
+      - name: Security Scan
+        run: python scripts/scan_for_pii.py
+```
+
+**6. Operational Dashboards:**
+
+- **Pipeline Health:** Success rates, latency, data freshness
+- **Cost Tracking:** Daily/weekly spend by project, team, query
+- **Data Quality:** Test pass rates, schema drift events, anomalies
+- **AI Safety:** LLM usage, blocked requests, PII detections
+
+**Key Results:**
+
+- Reduced pipeline incidents by 65%
+- Prevented 3 major data quality issues before production
+- Cost savings of 30% through proactive monitoring
+- Enabled safe AI adoption with clear guardrails
+- Centralized documentation improved onboarding time by 50%
+
+---
+
+### 💡 How to Present These Projects in Interviews:
+
+**Use the STAR Method:**
+
+- **S**ituation: Describe the business problem
+- **T**ask: Your specific responsibility
+- **A**ction: Technical decisions and implementation
+- **R**esult: Quantified impact
+
+**Example Answer:**
+
+> "In my CDP project, the **situation** was that marketing had fragmented customer data across 8 systems. My **task** was to design a unified data platform. I **architected** a solution using BigQuery for storage, Dataflow for streaming identity resolution, and Vertex AI for propensity models. The **result** was 5M+ unified profiles and a 25% reduction in customer acquisition cost."
+
+---
+
 ## ✅ SECTION 6 — Questions to Ask the Interviewer
 
 Always prepare questions to ask at the end. These show genuine interest and help you evaluate if the role is right for you.
