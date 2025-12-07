@@ -642,9 +642,7 @@ Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for runnin
 | Tool | Cloud | Purpose |
 |------|-------|---------|
 | 📊 **Dataform** | GCP | SQL transformations in BigQuery |
-| 🔧 **dbt (data build tool)** | Any | SQL transformations (cloud-agnostic) |
-| 🔵 **AWS Glue DataBrew** | AWS | Visual data preparation |
-| 🔷 **Azure Synapse Pipelines** | Azure | SQL transformations in Synapse |
+| 🔧 **dbt (data build tool)** | AWS/GCP | SQL transformations (works with Redshift, BigQuery, Snowflake) |
 
 > 💡 **My experience in simple words:**
 > 
@@ -652,7 +650,7 @@ Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for runnin
 > 
 > - **Dataform (GCP):** I write SQL models that transform raw data into clean tables in BigQuery. Dataform handles dependencies - if table A depends on table B, it runs B first. I also write tests to validate data quality (e.g., no nulls in key columns). It's like 'version control for SQL transformations'.
 > 
-> - **dbt (AWS/Azure/Any):** Same concept as Dataform but works with any database (Redshift, Snowflake, Databricks). I use dbt when I'm on AWS or need multi-cloud flexibility. The syntax is almost identical to Dataform.
+> - **dbt (AWS):** Same concept as Dataform but I use it with Redshift on AWS. The syntax is almost identical to Dataform, so switching between them is easy.
 > 
 > **Dataform vs Orchestration Tools - What's the difference?**
 > - **Airflow/Step Functions:** Orchestrate *external* jobs (Spark, APIs, file movements)
