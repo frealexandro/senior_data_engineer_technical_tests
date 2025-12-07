@@ -295,6 +295,14 @@ Bigtable is Google Cloud's **NoSQL database** designed for very large amounts of
 | 💹 Financial | Stock prices, transactions |
 | 🎯 Recommendations | User preferences |
 
+> 💡 **Use Cases in simple words:**
+> 
+> "I use Bigtable when I need to store billions of rows and read them very fast. For example:
+> - **Time-series:** I store server metrics every second and query the last hour instantly.
+> - **IoT:** I collect data from thousands of sensors and analyze patterns in real-time.
+> - **Financial:** I track every stock price change and retrieve historical data in milliseconds.
+> - **Recommendations:** I store user behavior to suggest products or content quickly."
+
 ---
 
 ## 🌍 7. What is Cloud Spanner?
