@@ -533,134 +533,11 @@ Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for runnin
 
 ---
 
-## 🖥️ 9. On-Premise vs Cloud Spark Experience
-
-| Environment | Experience |
-|-------------|------------|
-| 🏢 **On-Premise** | Hadoop/YARN clusters, resource management, tuning |
-| ☁️ **Cloud** | Dataproc (GCP), EMR (AWS), simplified scaling |
-
-> ✅ Comfortable with both environments, understanding deployment, optimization, and cost differences.
-
-> 💡 **My experience in simple words:**
-> 
-> "**On-Premise:** I managed Hadoop clusters with YARN. I had to manually configure memory, CPU, and executors. When a job failed, I checked logs across multiple nodes. Scaling meant buying new servers and waiting weeks. I spent a lot of time tuning shuffle partitions, memory allocation, and fixing out-of-memory errors.
-> 
-> **Cloud:** Now I use Dataproc or EMR. I spin up a cluster in minutes, run my job, and delete it. Auto-scaling adds workers when I need them. I don't worry about hardware - I just focus on my Spark code. If I need more power, I change the machine type and restart.
-> 
-> **Key differences I noticed:**
-> - **Cost:** On-premise = fixed cost (buy servers). Cloud = pay per use (can be cheaper or more expensive depending on usage).
-> - **Speed:** On-premise = weeks to scale. Cloud = minutes to scale.
-> - **Control:** On-premise = full control but more responsibility. Cloud = less control but less maintenance.
-> - **Tuning:** Same Spark tuning applies to both, but cloud gives me more flexibility to experiment quickly."
-
----
-
-## 🗄️ 9.1 Enterprise Database Experience (Oracle & SQL Server)
-
-| Database | Experience |
-|----------|------------|
-| 🟥 **Oracle** | PL/SQL ETL, partitioning, GoldenGate/CDC integration |
-| 🟦 **SQL Server** | SSIS (SQL Server Integration Services) optimization, Always On AG, stored procedures |
-
-| Integration Pattern | Tools Used |
-|---------------------|------------|
-| 📤 CDC to Cloud | Datastream, AWS DMS, Debezium |
-| 🔄 ETL Routines | PL/SQL, SSIS, stored procedures |
-| 📊 BI Integration | Views, stored procedures for Spark/BI tools |
-
-> 💡 **My experience in simple words:**
-> 
-> "**Oracle:** I wrote PL/SQL procedures for ETL jobs that ran nightly. I used partitioning to manage large tables - for example, partitioning by date so queries only scan relevant data. I set up GoldenGate for real-time CDC (Change Data Capture) to replicate data to our data lake without impacting production.
-> 
-> **SQL Server:** I built SSIS packages for data integration - extracting from multiple sources, transforming, and loading into the warehouse. I configured Always On Availability Groups for high availability. I optimized stored procedures that BI tools called directly.
-> 
-> **How I integrate enterprise databases with modern cloud:**
-> - **CDC to Cloud:** I use Datastream (GCP), AWS DMS, or Debezium to capture changes in real-time and stream them to BigQuery, Redshift, or data lakes. This way, I don't need heavy batch jobs - data flows continuously.
-> - **ETL Routines:** Sometimes I keep existing PL/SQL or SSIS jobs because they work well. I don't rewrite everything - I just connect their output to cloud storage.
-> - **BI Integration:** I create views and stored procedures that Spark or BI tools can query. This gives analysts a clean interface without exposing complex table structures."
-
----
-
-## ⚡ 9.2 Serverless Functions in Data Engineering
-
-| Use Case | Implementation |
-|----------|----------------|
-| 📋 Schema Validation | Validate on file arrival |
-| 🏷️ Metadata Enrichment | Add tags and context |
-| 🔔 Trigger Downstream | Start Spark jobs, send notifications |
-| 🔌 API Integration | Connect external services |
-
-> 💡 **My experience in simple words:**
-> 
-> "I use serverless functions (Cloud Functions, Lambda) for lightweight tasks that don't need a full Spark job:
-> 
-> - **Schema Validation:** When a file lands in GCS or S3, my function triggers automatically. It checks if the file has the right columns and data types. If validation fails, I move the file to an error folder and send an alert.
-> 
-> - **Metadata Enrichment:** I add metadata like processing timestamp, source system, and file size to each record before it goes to the data lake. This helps with debugging and auditing later.
-> 
-> - **Trigger Downstream:** After a file is validated, my function starts a Dataproc job or sends a message to Pub/Sub. This creates an event-driven pipeline without manual intervention.
-> 
-> - **API Integration:** I call external APIs to enrich data - for example, getting currency exchange rates or geocoding addresses. Functions are perfect because they scale automatically and I only pay when they run."
-
----
-
-## 🎼 9.3 Orchestration Tools Experience
-
-| Tool | Cloud | Experience |
-|------|-------|------------|
-| 🎼 **Airflow/Composer** | GCP | DAGs, batch/streaming orchestration |
-| 🎼 **MWAA** | AWS | Same Airflow capabilities |
-| ⚙️ **Step Functions** | AWS | Event-driven workflows |
-| 🏭 **Data Factory** | Azure | Pipeline orchestration |
-
-> 💡 **My experience in simple words:**
-> 
-> "I use orchestration tools to schedule and coordinate my data pipelines:
-> 
-> - **Airflow/Composer (GCP):** This is my main tool. I write DAGs (Directed Acyclic Graphs) in Python to define task dependencies. For example: extract data → validate → transform → load → send notification. If one step fails, Airflow retries it and alerts me. I use Composer because it's managed - I don't worry about Airflow infrastructure.
-> 
-> - **MWAA (AWS):** Same as Composer but on AWS. My Airflow DAGs work on both with minimal changes. I just update the connections and operators (e.g., GCS to S3, BigQuery to Redshift).
-> 
-> - **Step Functions (AWS):** I use this for event-driven workflows. Unlike Airflow (scheduled), Step Functions react to events immediately. For example, when a file arrives, it triggers a Lambda, then another Lambda, then an EMR job - all defined as a state machine.
-> 
-> - **Data Factory (Azure):** Similar concept but Azure-native. I've used it to orchestrate pipelines that move data between on-premise SQL Server and Azure Synapse.
-> 
-> **When do I choose each?**
-> - Complex batch pipelines with many dependencies → Airflow/Composer/MWAA
-> - Event-driven, real-time reactions → Step Functions
-> - Azure ecosystem → Data Factory"
-
----
-
-## 📊 9.4 Dataform & SQL Transformation Tools
-
-| Tool | Cloud | Purpose |
-|------|-------|---------|
-| 📊 **Dataform** | GCP | SQL transformations in BigQuery |
-| 🔧 **dbt (data build tool)** | AWS/GCP | SQL transformations (works with Redshift, BigQuery, Snowflake) |
-
-> 💡 **My experience in simple words:**
-> 
-> "I use Dataform and similar tools to transform data **inside** the warehouse using SQL:
-> 
-> - **Dataform (GCP):** I write SQL models that transform raw data into clean tables in BigQuery. Dataform handles dependencies - if table A depends on table B, it runs B first. I also write tests to validate data quality (e.g., no nulls in key columns). It's like 'version control for SQL transformations'.
-> 
-> - **dbt (AWS):** Same concept as Dataform but I use it with Redshift on AWS. The syntax is almost identical to Dataform, so switching between them is easy.
-> 
-> **Dataform vs Orchestration Tools - What's the difference?**
-> - **Airflow/Step Functions:** Orchestrate *external* jobs (Spark, APIs, file movements)
-> - **Dataform/dbt:** Transform data *inside* the warehouse with SQL only
-> 
-> I often use both together: Airflow triggers the Dataform/dbt job, which then runs all my SQL transformations in the right order."
-
----
-
 # 🎯 QUESTION_AND_ANSWERS_INTERVIEW_PREPARATION
 
 > **Note:** The answers below are based on personal experience. Each Data Engineer has a different background, so adapt these responses to reflect your own journey.
 > 
-> 📋 **This section includes:** Technical Experience (Sections 9.x above) + Interview Q&A
+> 📋 **This section includes:** Senior Evaluation Criteria + Interview Q&A (Q1-Q30)
 
 ---
 
@@ -689,11 +566,134 @@ Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for runnin
 
 ---
 
-## 🟢 SECTION 1 — Background / Simple Questions
+## 🟢 SECTION 1 — Background & Technical Experience (Q1-Q9)
 
 ---
 
-### 🎤 Q1. Tell me about your background as a Data Engineer.
+### 🖥️ Q1. On-Premise vs Cloud Spark Experience
+
+| Environment | Experience |
+|-------------|------------|
+| 🏢 **On-Premise** | Hadoop/YARN clusters, resource management, tuning |
+| ☁️ **Cloud** | Dataproc (GCP), EMR (AWS), simplified scaling |
+
+> ✅ Comfortable with both environments, understanding deployment, optimization, and cost differences.
+
+> 💡 **My experience in simple words:**
+> 
+> "**On-Premise:** I managed Hadoop clusters with YARN. I had to manually configure memory, CPU, and executors. When a job failed, I checked logs across multiple nodes. Scaling meant buying new servers and waiting weeks. I spent a lot of time tuning shuffle partitions, memory allocation, and fixing out-of-memory errors.
+> 
+> **Cloud:** Now I use Dataproc or EMR. I spin up a cluster in minutes, run my job, and delete it. Auto-scaling adds workers when I need them. I don't worry about hardware - I just focus on my Spark code. If I need more power, I change the machine type and restart.
+> 
+> **Key differences I noticed:**
+> - **Cost:** On-premise = fixed cost (buy servers). Cloud = pay per use (can be cheaper or more expensive depending on usage).
+> - **Speed:** On-premise = weeks to scale. Cloud = minutes to scale.
+> - **Control:** On-premise = full control but more responsibility. Cloud = less control but less maintenance.
+> - **Tuning:** Same Spark tuning applies to both, but cloud gives me more flexibility to experiment quickly."
+
+---
+
+### 🗄️ Q2. Enterprise Database Experience (Oracle & SQL Server)
+
+| Database | Experience |
+|----------|------------|
+| 🟥 **Oracle** | PL/SQL ETL, partitioning, GoldenGate/CDC integration |
+| 🟦 **SQL Server** | SSIS (SQL Server Integration Services) optimization, Always On AG, stored procedures |
+
+| Integration Pattern | Tools Used |
+|---------------------|------------|
+| 📤 CDC to Cloud | Datastream, AWS DMS, Debezium |
+| 🔄 ETL Routines | PL/SQL, SSIS, stored procedures |
+| 📊 BI Integration | Views, stored procedures for Spark/BI tools |
+
+> 💡 **My experience in simple words:**
+> 
+> "**Oracle:** I wrote PL/SQL procedures for ETL jobs that ran nightly. I used partitioning to manage large tables - for example, partitioning by date so queries only scan relevant data. I set up GoldenGate for real-time CDC (Change Data Capture) to replicate data to our data lake without impacting production.
+> 
+> **SQL Server:** I built SSIS packages for data integration - extracting from multiple sources, transforming, and loading into the warehouse. I configured Always On Availability Groups for high availability. I optimized stored procedures that BI tools called directly.
+> 
+> **How I integrate enterprise databases with modern cloud:**
+> - **CDC to Cloud:** I use Datastream (GCP), AWS DMS, or Debezium to capture changes in real-time and stream them to BigQuery, Redshift, or data lakes. This way, I don't need heavy batch jobs - data flows continuously.
+> - **ETL Routines:** Sometimes I keep existing PL/SQL or SSIS jobs because they work well. I don't rewrite everything - I just connect their output to cloud storage.
+> - **BI Integration:** I create views and stored procedures that Spark or BI tools can query. This gives analysts a clean interface without exposing complex table structures."
+
+---
+
+### ⚡ Q3. Serverless Functions in Data Engineering
+
+| Use Case | Implementation |
+|----------|----------------|
+| 📋 Schema Validation | Validate on file arrival |
+| 🏷️ Metadata Enrichment | Add tags and context |
+| 🔔 Trigger Downstream | Start Spark jobs, send notifications |
+| 🔌 API Integration | Connect external services |
+
+> 💡 **My experience in simple words:**
+> 
+> "I use serverless functions (Cloud Functions, Lambda) for lightweight tasks that don't need a full Spark job:
+> 
+> - **Schema Validation:** When a file lands in GCS or S3, my function triggers automatically. It checks if the file has the right columns and data types. If validation fails, I move the file to an error folder and send an alert.
+> 
+> - **Metadata Enrichment:** I add metadata like processing timestamp, source system, and file size to each record before it goes to the data lake. This helps with debugging and auditing later.
+> 
+> - **Trigger Downstream:** After a file is validated, my function starts a Dataproc job or sends a message to Pub/Sub. This creates an event-driven pipeline without manual intervention.
+> 
+> - **API Integration:** I call external APIs to enrich data - for example, getting currency exchange rates or geocoding addresses. Functions are perfect because they scale automatically and I only pay when they run."
+
+---
+
+### 🎼 Q4. Orchestration Tools Experience
+
+| Tool | Cloud | Experience |
+|------|-------|------------|
+| 🎼 **Airflow/Composer** | GCP | DAGs, batch/streaming orchestration |
+| 🎼 **MWAA** | AWS | Same Airflow capabilities |
+| ⚙️ **Step Functions** | AWS | Event-driven workflows |
+| 🏭 **Data Factory** | Azure | Pipeline orchestration |
+
+> 💡 **My experience in simple words:**
+> 
+> "I use orchestration tools to schedule and coordinate my data pipelines:
+> 
+> - **Airflow/Composer (GCP):** This is my main tool. I write DAGs (Directed Acyclic Graphs) in Python to define task dependencies. For example: extract data → validate → transform → load → send notification. If one step fails, Airflow retries it and alerts me. I use Composer because it's managed - I don't worry about Airflow infrastructure.
+> 
+> - **MWAA (AWS):** Same as Composer but on AWS. My Airflow DAGs work on both with minimal changes. I just update the connections and operators (e.g., GCS to S3, BigQuery to Redshift).
+> 
+> - **Step Functions (AWS):** I use this for event-driven workflows. Unlike Airflow (scheduled), Step Functions react to events immediately. For example, when a file arrives, it triggers a Lambda, then another Lambda, then an EMR job - all defined as a state machine.
+> 
+> - **Data Factory (Azure):** Similar concept but Azure-native. I've used it to orchestrate pipelines that move data between on-premise SQL Server and Azure Synapse.
+> 
+> **When do I choose each?**
+> - Complex batch pipelines with many dependencies → Airflow/Composer/MWAA
+> - Event-driven, real-time reactions → Step Functions
+> - Azure ecosystem → Data Factory"
+
+---
+
+### 📊 Q5. Dataform & SQL Transformation Tools
+
+| Tool | Cloud | Purpose |
+|------|-------|---------|
+| 📊 **Dataform** | GCP | SQL transformations in BigQuery |
+| 🔧 **dbt (data build tool)** | AWS/GCP | SQL transformations (works with Redshift, BigQuery, Snowflake) |
+
+> 💡 **My experience in simple words:**
+> 
+> "I use Dataform and similar tools to transform data **inside** the warehouse using SQL:
+> 
+> - **Dataform (GCP):** I write SQL models that transform raw data into clean tables in BigQuery. Dataform handles dependencies - if table A depends on table B, it runs B first. I also write tests to validate data quality (e.g., no nulls in key columns). It's like 'version control for SQL transformations'.
+> 
+> - **dbt (AWS):** Same concept as Dataform but I use it with Redshift on AWS. The syntax is almost identical to Dataform, so switching between them is easy.
+> 
+> **Dataform vs Orchestration Tools - What's the difference?**
+> - **Airflow/Step Functions:** Orchestrate *external* jobs (Spark, APIs, file movements)
+> - **Dataform/dbt:** Transform data *inside* the warehouse with SQL only
+> 
+> I often use both together: Airflow triggers the Dataform/dbt job, which then runs all my SQL transformations in the right order."
+
+---
+
+### 🎤 Q6. Tell me about your background as a Data Engineer.
 
 | Aspect | My Experience |
 |--------|---------------|
@@ -708,7 +708,7 @@ Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for runnin
 
 ---
 
-### 🛠️ Q2. What tools do you use daily?
+### 🛠️ Q7. What tools do you use daily?
 
 | Category | Tools |
 |----------|-------|
@@ -728,7 +728,7 @@ Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for runnin
 
 ---
 
-### 🏭 Q3. What industries have you worked in?
+### 🏭 Q8. What industries have you worked in?
 
 | Industry | Focus Area |
 |----------|------------|
@@ -744,7 +744,7 @@ Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for runnin
 
 ---
 
-### 🎓 Q4. What certifications do you have?
+### 🎓 Q9. What certifications do you have?
 
 | Certification | Provider | Status |
 |---------------|----------|--------|
@@ -759,11 +759,11 @@ Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for runnin
 
 ---
 
-## 🟡 SECTION 2 — Intermediate Questions
+## 🟡 SECTION 2 — Intermediate Questions (Q10-Q13)
 
 ---
 
-### 📊 Q5. Describe a typical ETL pipeline you built.
+### 📊 Q10. Describe a typical ETL pipeline you built.
 
 ```
 DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
@@ -781,7 +781,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### ✅ Q6. How do you ensure data quality?
+### ✅ Q11. How do you ensure data quality?
 
 | Validation Type | Implementation | Impact |
 |-----------------|----------------|--------|
@@ -799,7 +799,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### ⚡ Q7. How do you optimize BigQuery or Redshift performance?
+### ⚡ Q12. How do you optimize BigQuery or Redshift performance?
 
 | Optimization | BigQuery | Redshift |
 |--------------|----------|----------|
@@ -818,7 +818,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 🌊 Q8. Tell me about your experience with real-time streaming.
+### 🌊 Q13. Tell me about your experience with real-time streaming.
 
 | Platform | Use Case | Features |
 |----------|----------|----------|
@@ -831,11 +831,11 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-## 🔴 SECTION 3 — Advanced Senior Questions
+## 🔴 SECTION 3 — Advanced Senior Questions (Q14-Q20)
 
 ---
 
-### 🏗️ Q9. Describe how you design a scalable cloud data architecture.
+### 🏗️ Q14. Describe how you design a scalable cloud data architecture.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -860,7 +860,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 🤖 Q10. How do you approach RAG system design?
+### 🤖 Q15. How do you approach RAG system design?
 
 | Component | Implementation |
 |-----------|----------------|
@@ -877,7 +877,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 🤖 Q11. Explain how you build intelligent AI agents.
+### 🤖 Q16. Explain how you build intelligent AI agents.
 
 | Step | Description | Tools |
 |------|-------------|-------|
@@ -894,7 +894,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 🔔 Q12. How do you design alert and monitoring systems?
+### 🔔 Q17. How do you design alert and monitoring systems?
 
 | Alert Type | Trigger | Channel | Priority |
 |------------|---------|---------|----------|
@@ -910,7 +910,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 💪 Q13. Describe a challenging problem and how you solved it.
+### 💪 Q18. Describe a challenging problem and how you solved it.
 
 | Phase | Description |
 |-------|-------------|
@@ -936,7 +936,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### ☁️ Q14. How do you handle multi-cloud architectures?
+### ☁️ Q19. How do you handle multi-cloud architectures?
 
 | Layer | GCP | AWS | Abstraction |
 |-------|-----|-----|-------------|
@@ -952,7 +952,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 🤖 Q15. How have you combined Data Engineering + Generative AI?
+### 🤖 Q20. How have you combined Data Engineering + Generative AI?
 
 | Integration | Description |
 |-------------|-------------|
@@ -967,11 +967,11 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-## 🟣 SECTION 4 — Behavioral Questions
+## 🟣 SECTION 4 — Behavioral Questions (Q21-Q25)
 
 ---
 
-### 👨‍🏫 Q16. How do you mentor junior engineers?
+### 👨‍🏫 Q21. How do you mentor junior engineers?
 
 | Method | Description |
 |--------|-------------|
@@ -990,7 +990,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 🤝 Q17. How do you handle cross-functional collaboration?
+### 🤝 Q22. How do you handle cross-functional collaboration?
 
 | Team | Collaboration Type |
 |------|-------------------|
@@ -1009,7 +1009,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 📚 Q18. How do you stay updated?
+### 📚 Q23. How do you stay updated?
 
 | Method | Platform | Focus |
 |--------|----------|-------|
@@ -1024,7 +1024,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 💪 Q19. What has been the most challenging project?
+### 💪 Q24. What has been the most challenging project?
 
 | Phase | Description |
 |-------|-------------|
@@ -1047,7 +1047,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 🎯 Q20. What are you looking for in a new role?
+### 🎯 Q25. What are you looking for in a new role?
 
 | Looking For | Description |
 |-------------|-------------|
@@ -1062,11 +1062,11 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-## ⚫ SECTION 5 — Expert: Senior DE + AI Questions
+## ⚫ SECTION 5 — Expert: Senior DE + AI Questions (Q26-Q30)
 
 ---
 
-### 🤖 Q21. What is your approach to multi-agent architectures?
+### 🤖 Q26. What is your approach to multi-agent architectures?
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -1099,7 +1099,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 📊 Q22. How do you measure RAG or agent system quality?
+### 📊 Q27. How do you measure RAG or agent system quality?
 
 | Metric | Description | Target |
 |--------|-------------|--------|
@@ -1117,7 +1117,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 🔒 Q23. How do you handle data governance and compliance?
+### 🔒 Q28. How do you handle data governance and compliance?
 
 | Area | Implementation |
 |------|----------------|
@@ -1133,7 +1133,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 💰 Q24. How do you approach cost optimization?
+### 💰 Q29. How do you approach cost optimization?
 
 | Strategy | Implementation | Savings |
 |----------|----------------|---------|
@@ -1149,7 +1149,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 ---
 
-### 🏗️ Q25. What's your experience with data mesh?
+### 🏗️ Q30. What's your experience with data mesh?
 
 | Principle | Implementation |
 |-----------|----------------|
