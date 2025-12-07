@@ -328,6 +328,13 @@ Cloud Spanner is Google Cloud's fully managed, **globally scalable SQL database*
 | 🔥 **Dataproc** | Processing | Spark/Hadoop jobs | ❌ Managed clusters |
 | 🔵 **BigQuery** | Analytics | SQL queries, BI | ✅ Yes |
 
+> 💡 **When do I use each one?**
+> 
+> "I choose based on what I need to do:
+> - **Dataflow:** I use it when I need to process streaming data in real-time or run batch ETL pipelines. I don't manage any servers - it auto-scales for me.
+> - **Dataproc:** I use it when I have existing Spark or Hadoop code and I want to run it in the cloud. I manage clusters but GCP handles the infrastructure.
+> - **BigQuery:** I use it when I want to analyze data that's already stored. I just write SQL queries and get results in seconds - no processing pipelines needed."
+
 ---
 
 # 🟠 QUESTION_AND_ANSWERS_FUNDAMENTALS_AWS
@@ -417,6 +424,14 @@ Amazon DynamoDB is AWS's high-performance **NoSQL database**.
 | 🌍 **Global** | Global Tables for multi-region |
 | 💰 **Pricing** | On-demand or Provisioned |
 
+> 💡 **Use Cases in simple words:**
+> 
+> "I use DynamoDB when I need super fast reads/writes at any scale. For example:
+> - **Gaming:** I store player sessions and leaderboards with instant updates.
+> - **E-commerce:** I handle shopping carts and user profiles for millions of users.
+> - **Mobile apps:** I store user data that syncs across devices in real-time.
+> - **Ad tech:** I serve personalized ads in milliseconds based on user behavior."
+
 ---
 
 ## 🌍 7. Amazon Aurora Global (≈ Cloud Spanner)
@@ -428,6 +443,12 @@ Amazon DynamoDB is AWS's high-performance **NoSQL database**.
 | **Scale** | Global replication | Global replication |
 | **Best For** | Traditional SQL apps | Key-value workloads |
 
+> 💡 **Use Cases in simple words:**
+> 
+> "I choose between Aurora Global and DynamoDB Global Tables based on my needs:
+> - **Aurora Global:** I use it when I need SQL queries and ACID transactions globally. For example, banking apps where I need strong consistency for money transfers.
+> - **DynamoDB Global Tables:** I use it when I need fast key-value lookups globally. For example, a gaming app where I need to read user profiles quickly, and eventual consistency is okay."
+
 ---
 
 ## ⚖️ 8. AWS Processing Services
@@ -437,6 +458,23 @@ Amazon DynamoDB is AWS's high-performance **NoSQL database**.
 | 🌊 **Dataflow** | AWS Glue / Kinesis | ETL, Streaming |
 | 🔥 **Dataproc** | Amazon EMR | Spark/Hadoop |
 | 🔵 **BigQuery** | Amazon Redshift | Data Warehouse |
+
+### 🔄 AWS Glue vs Kinesis - What's the difference?
+
+| Feature | 🔧 AWS Glue | 🌊 Kinesis |
+|---------|-------------|------------|
+| **Purpose** | ETL (Extract, Transform, Load) | Real-time streaming |
+| **Data Type** | Batch data | Continuous streams |
+| **Latency** | Minutes to hours | Milliseconds to seconds |
+| **Use Case** | Data warehousing, data lakes | Live dashboards, alerts |
+
+> 💡 **When do I use each one?**
+> 
+> "I choose between Glue and Kinesis based on timing:
+> - **AWS Glue:** I use it when I need to move and transform data in batches. For example, every night I extract data from databases, transform it, and load it into Redshift.
+> - **Kinesis:** I use it when I need to process data as it arrives. For example, I stream clickstream data from my website and analyze user behavior in real-time.
+> 
+> Sometimes I use both together: Kinesis captures real-time events, and Glue processes them in batches for long-term storage."
 
 ---
 
