@@ -112,6 +112,11 @@ Apache Spark is a fast, open-source framework used to process large amounts of d
 | 🐍 **Easy to Use** | Python, SQL, Scala, Java support |
 | 📈 **Scalable** | From laptop to thousands of servers |
 
+> 💡 **Why is Spark faster than MapReduce?**
+> 
+> - **Hadoop MapReduce** writes intermediate results to HDFS (disk) after every map and reduce stage. This makes it slower but very fault-tolerant.
+> - **Apache Spark** stores most intermediate data in memory (RAM) using RDDs, which makes it much faster than MapReduce.
+
 ---
 
 ## 📦 4. What is an RDD?
