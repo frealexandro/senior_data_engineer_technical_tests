@@ -318,6 +318,25 @@ Cloud Spanner is Google Cloud's fully managed, **globally scalable SQL database*
 
 **Use cases:** Financial apps, global e-commerce, inventory systems, gaming backends.
 
+### ⚖️ Bigtable vs Cloud Spanner - What's the difference?
+
+| Feature | ⚡ Bigtable | 🌍 Cloud Spanner |
+|---------|-------------|------------------|
+| **Type** | NoSQL (key-value) | SQL (relational) |
+| **Schema** | Schema-less | Structured schema |
+| **Query Language** | No SQL, only key lookups | Full SQL support |
+| **Consistency** | Eventually consistent | Strong ACID transactions |
+| **Joins** | ❌ Not supported | ✅ Supported |
+| **Best For** | High-throughput, simple reads | Complex queries, transactions |
+
+> 💡 **When do I use each one?**
+> 
+> "I choose between Bigtable and Cloud Spanner based on my data needs:
+> - **Bigtable:** I use it when I have massive amounts of data with simple access patterns. For example, I store time-series data where I just read by row key - no complex queries needed. It's extremely fast for single-key lookups.
+> - **Cloud Spanner:** I use it when I need SQL features like JOINs and transactions across multiple rows. For example, a banking app where I need to transfer money between accounts atomically - I can't afford inconsistency.
+> 
+> Simple rule: If I need SQL and transactions → Spanner. If I need speed and scale with simple lookups → Bigtable."
+
 ---
 
 ## ⚖️ 8. Dataflow vs Dataproc vs BigQuery
@@ -458,6 +477,42 @@ Amazon DynamoDB is AWS's high-performance **NoSQL database**.
 | 🌊 **Dataflow** | AWS Glue / Kinesis | ETL, Streaming |
 | 🔥 **Dataproc** | Amazon EMR | Spark/Hadoop |
 | 🔵 **BigQuery** | Amazon Redshift | Data Warehouse |
+
+### 🔥 What is Amazon EMR?
+
+Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for running Spark, Hadoop, Hive, and other frameworks.
+
+| Feature | Description |
+|---------|-------------|
+| 🔧 **Frameworks** | Spark, Hadoop, Hive, Presto, Flink |
+| 📈 **Scale** | Auto-scaling clusters |
+| 💰 **Pricing** | Pay per cluster hour |
+| 🗃️ **Storage** | S3, HDFS, or EBS |
+
+> 💡 **When do I use EMR?**
+> 
+> "I use Amazon EMR when:
+> - I have existing **Spark or Hadoop jobs** and I want to run them on AWS.
+> - I need full control over my cluster configuration and installed software.
+> - I want to run **Hive, Presto, or Flink** workloads - not just Spark.
+> 
+> For example, I migrate my on-premise Spark jobs to EMR without rewriting code. I just upload my JARs, configure the cluster, and run."
+
+### 🌊 Does Apache Beam work on AWS like Dataflow?
+
+| Runner | Platform | Description |
+|--------|----------|-------------|
+| 🌊 **Dataflow Runner** | GCP | Native, fully managed |
+| 🔥 **Spark Runner** | EMR / Dataproc | Run Beam on Spark clusters |
+| 🌀 **Flink Runner** | EMR / Kinesis Data Analytics | Run Beam on Flink |
+
+> 💡 **In simple words:**
+> 
+> "Apache Beam is the **code I write**, and the runner is **where it runs**:
+> - On **GCP**, I use Dataflow Runner - it's native and serverless.
+> - On **AWS**, I can run my Beam code on **EMR using Spark Runner** or **Flink Runner**. It's not serverless like Dataflow, but my Beam code works the same.
+> 
+> So yes, I can write Beam pipelines once and run them on both GCP (Dataflow) and AWS (EMR with Spark/Flink). That's the power of Beam - write once, run anywhere!"
 
 ### 🔄 AWS Glue vs Kinesis - What's the difference?
 
