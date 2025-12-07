@@ -29,9 +29,9 @@ A function is a reusable block of code that takes input, performs some logic, an
 
 ---
 
-## 🗄️ 1. What is SQL?
+## 🗄️ 1. What is SQL (Structured Query Language)?
 
-SQL is a language used to store, retrieve, and manage data in relational databases. It lets you query data, update it, and organize it using tables.
+SQL (Structured Query Language) is a language used to store, retrieve, and manage data in relational databases. It lets you query data, update it, and organize it using tables.
 
 ---
 
@@ -565,7 +565,7 @@ Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for runnin
 | Database | Experience |
 |----------|------------|
 | 🟥 **Oracle** | PL/SQL ETL, partitioning, GoldenGate/CDC integration |
-| 🟦 **SQL Server** | SSIS optimization, Always On AG, stored procedures |
+| 🟦 **SQL Server** | SSIS (SQL Server Integration Services) optimization, Always On AG, stored procedures |
 
 | Integration Pattern | Tools Used |
 |---------------------|------------|
