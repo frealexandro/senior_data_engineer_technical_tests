@@ -145,6 +145,57 @@ An **RDD** (Resilient Distributed Dataset) is the basic data structure in Apache
 
 ---
 
+### 🔄 4.2 What is the difference between Transformations and Actions in Spark?
+
+In Spark, operations on RDDs/DataFrames are divided into two categories:
+
+| Aspect | 🔄 Transformations | ▶️ Actions |
+|--------|-------------------|-----------|
+| **Execution** | Lazy (not executed immediately) | Eager (triggers execution) |
+| **Returns** | New RDD/DataFrame | Result to driver or storage |
+| **Examples** | `map`, `filter`, `select`, `groupBy`, `join` | `collect`, `count`, `show`, `write`, `take` |
+| **DAG** | Builds the execution plan | Executes the DAG |
+
+**🔄 Transformations (Lazy):**
+- Create a new RDD/DataFrame from an existing one
+- Don't execute until an action is called
+- Build the **DAG (Directed Acyclic Graph)** of operations
+
+```python
+# These are transformations - nothing runs yet!
+df_filtered = df.filter(df["age"] > 25)
+df_selected = df_filtered.select("name", "salary")
+df_grouped = df_selected.groupBy("name").sum("salary")
+```
+
+**▶️ Actions (Eager):**
+- Trigger the execution of all transformations
+- Return results to the driver or write to storage
+
+```python
+# This is an action - NOW all transformations execute!
+df_grouped.show()        # Action: displays results
+df_grouped.count()       # Action: returns number of rows
+df_grouped.collect()     # Action: returns all data to driver
+df_grouped.write.parquet("output/")  # Action: writes to storage
+```
+
+> 💡 **Why Lazy Evaluation?**
+> 
+> Spark uses lazy evaluation because it allows the **Catalyst Optimizer** to analyze the entire DAG and optimize the execution plan before running. This leads to:
+> - **Better performance:** Combines multiple operations into fewer steps
+> - **Reduced I/O:** Avoids unnecessary intermediate data writes
+> - **Optimization:** Predicate pushdown, column pruning, join reordering
+
+| Transformation Type | Description | Examples |
+|---------------------|-------------|----------|
+| **Narrow** | Each partition depends on one parent partition | `map`, `filter`, `select` |
+| **Wide** | Partitions depend on multiple parent partitions (shuffle) | `groupBy`, `join`, `repartition` |
+
+> 🎯 **Interview Tip:** "I understand that transformations are lazy and build the DAG, while actions trigger execution. This is why I can chain many transformations without performance issues - Spark optimizes the entire plan before executing. I also know the difference between narrow and wide transformations, which helps me understand when shuffles occur."
+
+---
+
 ## 📨 5. What is Apache Kafka?
 
 Apache Kafka is a distributed streaming platform used to move data between systems in real time.
@@ -356,6 +407,115 @@ Cloud Spanner is Google Cloud's fully managed, **globally scalable SQL database*
 
 ---
 
+### 🔧 8.1 How do you configure a Dataproc cluster?
+
+> 💡 **Have you configured a Dataproc cluster before?**
+> 
+> "Yes, I've configured many Dataproc clusters for different workloads. Here's how I approach cluster configuration:"
+
+**Key Configuration Parameters:**
+
+| Parameter | Description | My Recommendation |
+|-----------|-------------|-------------------|
+| 🖥️ **Master Node** | Coordinates workers, runs driver | `n1-standard-4` for most jobs |
+| 👷 **Worker Nodes** | Execute Spark tasks | Start with 2-4, scale based on data |
+| 📊 **Machine Type** | CPU/Memory per node | `n1-standard-4` to `n1-highmem-16` |
+| 💾 **Disk Size** | Local storage per node | 100-500 GB SSD |
+| 🔄 **Preemptible Workers** | Cheaper, can be reclaimed | Use for fault-tolerant batch jobs |
+| 📦 **Image Version** | Spark/Hadoop versions | `2.1-debian11` (Spark 3.3+) |
+
+**Example: Creating a Dataproc Cluster (gcloud CLI)**
+
+```bash
+gcloud dataproc clusters create my-spark-cluster \
+    --region=us-central1 \
+    --zone=us-central1-a \
+    --master-machine-type=n1-standard-4 \
+    --master-boot-disk-size=100GB \
+    --num-workers=2 \
+    --worker-machine-type=n1-standard-4 \
+    --worker-boot-disk-size=100GB \
+    --num-secondary-workers=2 \
+    --secondary-worker-type=preemptible \
+    --image-version=2.1-debian11 \
+    --initialization-actions=gs://my-bucket/init-scripts/install-packages.sh \
+    --properties=spark:spark.executor.memory=4g,spark:spark.driver.memory=2g \
+    --optional-components=JUPYTER,ANACONDA \
+    --enable-component-gateway
+```
+
+**Example: Creating a Dataproc Cluster (Terraform)**
+
+```hcl
+resource "google_dataproc_cluster" "spark_cluster" {
+  name   = "my-spark-cluster"
+  region = "us-central1"
+
+  cluster_config {
+    master_config {
+      num_instances = 1
+      machine_type  = "n1-standard-4"
+      disk_config {
+        boot_disk_size_gb = 100
+        boot_disk_type    = "pd-ssd"
+      }
+    }
+
+    worker_config {
+      num_instances = 2
+      machine_type  = "n1-standard-4"
+      disk_config {
+        boot_disk_size_gb = 100
+        boot_disk_type    = "pd-ssd"
+      }
+    }
+
+    preemptible_worker_config {
+      num_instances = 2
+    }
+
+    software_config {
+      image_version = "2.1-debian11"
+      override_properties = {
+        "spark:spark.executor.memory" = "4g"
+        "spark:spark.driver.memory"   = "2g"
+      }
+    }
+
+    gce_cluster_config {
+      zone        = "us-central1-a"
+      subnetwork  = google_compute_subnetwork.default.id
+      service_account = google_service_account.dataproc.email
+    }
+  }
+}
+```
+
+**Submitting a Spark Job:**
+
+```bash
+gcloud dataproc jobs submit pyspark gs://my-bucket/jobs/my_spark_job.py \
+    --cluster=my-spark-cluster \
+    --region=us-central1 \
+    --properties=spark.executor.instances=4,spark.executor.memory=4g \
+    -- --input=gs://my-bucket/data/input/ --output=gs://my-bucket/data/output/
+```
+
+**My Configuration Best Practices:**
+
+| Practice | Why |
+|----------|-----|
+| 🔄 **Use preemptible workers** | 60-80% cost savings for batch jobs |
+| 📊 **Right-size machines** | Start small, monitor, then scale |
+| ⏱️ **Set idle timeout** | Auto-delete clusters after X minutes of inactivity |
+| 🔧 **Use initialization actions** | Install custom packages at cluster creation |
+| 📦 **Store data in GCS** | Separate storage from compute for flexibility |
+| 🏷️ **Add labels** | Track costs by project/team/environment |
+
+> 🎯 **Interview Tip:** "I configure Dataproc clusters based on workload requirements. For development, I use small clusters with preemptible workers. For production, I use dedicated workers with auto-scaling. I always separate storage (GCS) from compute so I can delete clusters when jobs finish and save costs. I also use Terraform for Infrastructure as Code to ensure reproducible deployments."
+
+---
+
 # 🟠 QUESTION_AND_ANSWERS_FUNDAMENTALS_AWS
 
 ---
@@ -497,6 +657,177 @@ Amazon EMR (Elastic MapReduce) is AWS's managed **big data platform** for runnin
 > - I want to run **Hive, Presto, or Flink** workloads - not just Spark.
 > 
 > For example, I migrate my on-premise Spark jobs to EMR without rewriting code. I just upload my JARs, configure the cluster, and run."
+
+### 🔧 How do you configure an Amazon EMR cluster?
+
+> 💡 **Have you configured an EMR cluster before?**
+> 
+> "Yes, I've configured EMR clusters for various Spark and Hadoop workloads. Here's how I approach EMR cluster configuration:"
+
+**Key Configuration Parameters:**
+
+| Parameter | Description | My Recommendation |
+|-----------|-------------|-------------------|
+| 🖥️ **Master Node** | Coordinates cluster, runs YARN | `m5.xlarge` for most jobs |
+| 👷 **Core Nodes** | Store HDFS data, run tasks | 2-4 nodes, scale based on data |
+| 📊 **Task Nodes** | Only run tasks (no HDFS) | Use Spot instances for cost savings |
+| 💾 **Instance Type** | CPU/Memory per node | `m5.xlarge` to `r5.4xlarge` |
+| 📦 **Release Label** | EMR version (Spark/Hadoop) | `emr-6.10.0` (Spark 3.3+) |
+| 🔄 **Spot Instances** | Cheaper, can be interrupted | Use for task nodes in batch jobs |
+
+**Example: Creating an EMR Cluster (AWS CLI)**
+
+```bash
+aws emr create-cluster \
+    --name "my-spark-cluster" \
+    --release-label emr-6.10.0 \
+    --applications Name=Spark Name=Hadoop Name=Hive \
+    --instance-groups '[
+        {
+            "InstanceGroupType": "MASTER",
+            "InstanceCount": 1,
+            "InstanceType": "m5.xlarge",
+            "Name": "Master"
+        },
+        {
+            "InstanceGroupType": "CORE",
+            "InstanceCount": 2,
+            "InstanceType": "m5.xlarge",
+            "Name": "Core"
+        },
+        {
+            "InstanceGroupType": "TASK",
+            "InstanceCount": 2,
+            "InstanceType": "m5.xlarge",
+            "Market": "SPOT",
+            "Name": "Task"
+        }
+    ]' \
+    --ec2-attributes KeyName=my-key,SubnetId=subnet-xxxxx \
+    --use-default-roles \
+    --log-uri s3://my-bucket/emr-logs/ \
+    --configurations '[
+        {
+            "Classification": "spark-defaults",
+            "Properties": {
+                "spark.executor.memory": "4g",
+                "spark.driver.memory": "2g",
+                "spark.executor.instances": "4"
+            }
+        }
+    ]' \
+    --bootstrap-actions Path=s3://my-bucket/bootstrap/install-packages.sh,Name=InstallPackages \
+    --auto-terminate \
+    --steps '[
+        {
+            "Type": "Spark",
+            "Name": "My Spark Job",
+            "ActionOnFailure": "TERMINATE_CLUSTER",
+            "Args": ["--deploy-mode", "cluster", "s3://my-bucket/jobs/my_spark_job.py"]
+        }
+    ]'
+```
+
+**Example: Creating an EMR Cluster (Terraform)**
+
+```hcl
+resource "aws_emr_cluster" "spark_cluster" {
+  name          = "my-spark-cluster"
+  release_label = "emr-6.10.0"
+  applications  = ["Spark", "Hadoop", "Hive"]
+  
+  service_role = aws_iam_role.emr_service.arn
+  
+  ec2_attributes {
+    subnet_id                         = aws_subnet.main.id
+    emr_managed_master_security_group = aws_security_group.emr_master.id
+    emr_managed_slave_security_group  = aws_security_group.emr_slave.id
+    instance_profile                  = aws_iam_instance_profile.emr_ec2.arn
+    key_name                          = "my-key"
+  }
+
+  master_instance_group {
+    instance_type  = "m5.xlarge"
+    instance_count = 1
+    ebs_config {
+      size = 100
+      type = "gp3"
+    }
+  }
+
+  core_instance_group {
+    instance_type  = "m5.xlarge"
+    instance_count = 2
+    ebs_config {
+      size = 100
+      type = "gp3"
+    }
+  }
+
+  configurations_json = jsonencode([
+    {
+      Classification = "spark-defaults"
+      Properties = {
+        "spark.executor.memory"    = "4g"
+        "spark.driver.memory"      = "2g"
+        "spark.executor.instances" = "4"
+      }
+    }
+  ])
+
+  log_uri = "s3://my-bucket/emr-logs/"
+
+  tags = {
+    Environment = "production"
+    Project     = "data-platform"
+  }
+}
+```
+
+**Submitting a Spark Job to EMR:**
+
+```bash
+# Add step to running cluster
+aws emr add-steps \
+    --cluster-id j-XXXXXXXXXXXXX \
+    --steps Type=Spark,Name="My Spark Job",ActionOnFailure=CONTINUE,\
+Args=[--deploy-mode,cluster,--executor-memory,4g,s3://my-bucket/jobs/my_spark_job.py]
+
+# Or use spark-submit directly on the cluster
+spark-submit \
+    --deploy-mode cluster \
+    --master yarn \
+    --executor-memory 4g \
+    --num-executors 4 \
+    s3://my-bucket/jobs/my_spark_job.py \
+    --input s3://my-bucket/data/input/ \
+    --output s3://my-bucket/data/output/
+```
+
+**My Configuration Best Practices:**
+
+| Practice | Why |
+|----------|-----|
+| 🔄 **Use Spot for Task nodes** | 60-90% cost savings, no data loss if interrupted |
+| 📊 **Use Core nodes for HDFS** | Stable storage, use On-Demand instances |
+| ⏱️ **Auto-terminate** | Delete cluster after job completes |
+| 🔧 **Bootstrap actions** | Install custom packages at cluster creation |
+| 📦 **Store data in S3** | Separate storage from compute |
+| 🏷️ **Use tags** | Track costs by project/team/environment |
+| 📝 **Enable logging** | Send logs to S3 for debugging |
+
+**EMR vs Dataproc Comparison:**
+
+| Feature | 🔥 Dataproc (GCP) | 🔥 EMR (AWS) |
+|---------|-------------------|--------------|
+| **Startup Time** | ~90 seconds | ~5-10 minutes |
+| **Spot/Preemptible** | Preemptible workers | Spot instances |
+| **Storage** | GCS | S3 / HDFS |
+| **Pricing** | Per-second | Per-second |
+| **Serverless Option** | Dataproc Serverless | EMR Serverless |
+| **Notebook Integration** | Jupyter via Component | EMR Studio |
+
+> 🎯 **Interview Tip:** "I configure EMR clusters based on workload requirements. For cost optimization, I use Spot instances for Task nodes since they don't store HDFS data and can be safely interrupted. I always use auto-termination for batch jobs and store data in S3 to separate storage from compute. For Infrastructure as Code, I use Terraform to version control my cluster configurations and ensure reproducible deployments across environments."
 
 ### 🌊 Does Apache Beam work on AWS like Dataflow?
 
@@ -1209,7 +1540,7 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 
 > *"In this project, I was responsible for building a Customer Data Platform from scratch. The marketing team had customer data scattered across 8 different systems — CRM, website analytics, mobile app events, ad platforms like Google Ads and Meta, and even call center logs. Nobody had a unified view of the customer.*
 >
-> *I started by extracting data from Supermetrics and the different ad platform APIs using Cloud Functions. For real-time events from the website and mobile app, I set up Pub/Sub to capture everything as it happened. Then I used Dataproc with Spark Structured Streaming to process the streaming data and perform identity resolution — basically matching users across systems using email, phone numbers, and device IDs.*
+> *I started by extracting data from Supermetrics and the different ad platform APIs using **BigQuery Data Transfers** — this is a native GCP service that automatically schedules and loads data from sources like Google Ads, Google Analytics, and third-party connectors like Supermetrics directly into BigQuery. For real-time events from the website and mobile app, I set up Pub/Sub to capture everything as it happened. Then I used Dataproc with Spark Structured Streaming to process the streaming data and perform identity resolution — basically matching users across systems using email, phone numbers, and device IDs.*
 >
 > *All the processed data landed in BigQuery, which I partitioned by date and clustered by customer_id for optimal query performance. I built the transformation layer with Dataform, creating a clean data model with staging, intermediate, and mart layers. The whole pipeline was orchestrated with Cloud Composer running daily refreshes.*
 >
@@ -1220,9 +1551,9 @@ DATA SOURCES → INGESTION → TRANSFORMATION → OUTPUT
 ```
 DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 ─────────────────────────────────────────────────────────────
-[CRM]          Cloud Functions   Dataproc      BigQuery     Vertex AI
-[Website]  ──► Pub/Sub       ──► (Spark)   ──► GCS      ──► Looker
-[Mobile]       Scheduler         Dataform                   Ad APIs
+[CRM]          BQ Data Transfers  Dataproc      BigQuery     Vertex AI
+[Website]  ──► Pub/Sub        ──► (Spark)   ──► GCS      ──► Looker
+[Mobile]       Cloud Functions    Dataform                   Ad APIs
 [Ads]
 [Call Center]
                └──── Cloud Composer (Airflow) Orchestration ────┘
@@ -1232,7 +1563,7 @@ DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 
 | Layer | Components | Details |
 |-------|------------|---------|
-| 📥 **Ingestion** | Cloud Functions, Pub/Sub | Real-time + batch loads |
+| 📥 **Ingestion** | BigQuery Data Transfers, Pub/Sub | Supermetrics/ads via Data Transfers, real-time via Pub/Sub |
 | ⚙️ **Processing** | Dataproc (Spark), Dataform | Identity resolution, transforms |
 | 💾 **Storage** | BigQuery, GCS | Partitioned by date, clustered by customer_id |
 | 🔗 **Identity** | Custom matching | Email, phone, device IDs |
@@ -1264,7 +1595,7 @@ DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 
 > *"In this project, I was responsible for building a Customer Data Platform from scratch on AWS. The marketing team had customer data scattered across 8 different systems — CRM, website analytics, mobile app events, ad platforms like Google Ads and Meta, and even call center logs. Nobody had a unified view of the customer.*
 >
-> *I started by extracting data from Supermetrics and the different ad platform APIs using Lambda functions triggered by EventBridge on a schedule. For real-time events from the website and mobile app, I set up Kinesis Data Streams to capture everything as it happened, and configured Kinesis Firehose to automatically deliver the data to S3 in Parquet format. Then I used AWS Glue with Spark to process the data and perform identity resolution — basically matching users across systems using email, phone numbers, and device IDs.*
+> *Unlike GCP which has BigQuery Data Transfers as a native service, AWS doesn't have a direct equivalent for marketing data sources. So for extracting data from Supermetrics and ad platform APIs, I used **Fivetran** (a third-party ELT tool) that connects to 150+ sources and loads data directly into S3 and Redshift. Alternatively, for some sources I used **AWS AppFlow** for SaaS integrations like Salesforce and Google Analytics, and **Lambda functions** triggered by EventBridge for custom API extractions where Fivetran/AppFlow didn't have connectors. For real-time events from the website and mobile app, I set up Kinesis Data Streams to capture everything as it happened, and configured Kinesis Firehose to automatically deliver the data to S3 in Parquet format. Then I used AWS Glue with Spark to process the data and perform identity resolution — basically matching users across systems using email, phone numbers, and device IDs.*
 >
 > *All the processed data landed in S3 organized as a data lake with Bronze, Silver, and Gold layers — raw data in Bronze, cleaned data in Silver, and business-ready aggregations in Gold. For the warehouse layer, I used Redshift Serverless which I partitioned by date and used distribution keys on customer_id for optimal query performance. I also set up Redshift Spectrum to query the S3 data lake directly without moving data around.*
 >
@@ -1277,10 +1608,10 @@ DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 ```
 DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 ─────────────────────────────────────────────────────────────
-[CRM]          Lambda          Glue/EMR      Redshift    SageMaker
-[Website]  ──► Kinesis     ──► Step      ──► S3 Lake ──► QuickSight
-[Mobile]       EventBridge     Functions                 Ad APIs
-[Ads]
+[CRM]          Fivetran/AppFlow   Glue/EMR      Redshift    SageMaker
+[Website]  ──► Kinesis        ──► Step      ──► S3 Lake ──► QuickSight
+[Mobile]       Lambda             Functions                  Ad APIs
+[Ads]          EventBridge
 [Call Center]
                └──── MWAA (Managed Airflow) Orchestration ────┘
 ```
@@ -1289,10 +1620,22 @@ DATA SOURCES → INGESTION → PROCESSING → STORAGE → ACTIVATION
 
 | Pattern | Service | Purpose |
 |---------|---------|---------|
+| 📥 **Data Ingestion** | Fivetran / AppFlow / Lambda | No native Data Transfers like GCP |
 | 📤 Auto-delivery | Kinesis Firehose | S3 delivery + transformation |
 | 🔒 Governance | Lake Formation | Centralized access control |
 | 🔍 Ad-hoc queries | Athena | Query S3 directly |
 | 🔗 S3 from Redshift | Redshift Spectrum | External tables |
+
+> 💡 **GCP vs AWS Data Ingestion:**
+> 
+> | Aspect | 🔵 GCP | 🟠 AWS |
+> |--------|--------|--------|
+> | **Native Service** | BigQuery Data Transfers | ❌ No direct equivalent |
+> | **Marketing Data** | Supermetrics connector | Fivetran, Stitch, Airbyte |
+> | **SaaS Sources** | Data Transfers | AWS AppFlow (limited sources) |
+> | **Custom APIs** | Cloud Functions | Lambda + EventBridge |
+> 
+> *"AWS doesn't have a native Data Transfer service like GCP. For marketing data sources like Supermetrics, Google Ads, and Meta, I use third-party ELT tools like Fivetran or Airbyte. For SaaS sources like Salesforce, AWS AppFlow works well. For custom APIs without connectors, I build Lambda functions triggered by EventBridge on a schedule."*
 
 ### 📈 Results
 
